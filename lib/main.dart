@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'widgets/spotifyAuth.dart';
 
 void main() {
   runApp(const MyApp());
@@ -105,8 +106,8 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Image.network(message)
+          children: const <Widget>[
+            SpotifyAuth(),
           ],
         ),
       ),

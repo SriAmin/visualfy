@@ -28,6 +28,21 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>spotify</string>
+    </array>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>com.example.visualfy</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>spotify-ios-quick-start</string>
+        </array>
+      </dict>
+    </array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
