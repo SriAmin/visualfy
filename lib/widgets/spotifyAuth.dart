@@ -6,7 +6,9 @@ import 'package:logger/logger.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
 class SpotifyAuth extends StatefulWidget {
-  const SpotifyAuth({super.key});
+  final Function()? onConnect;
+
+  const SpotifyAuth({super.key, this.onConnect});
 
   @override
   State<SpotifyAuth> createState() => _SpotifyAuthState();
@@ -26,13 +28,18 @@ class _SpotifyAuthState extends State<SpotifyAuth>{
           clientId: "7bc59922129e42de95166c07c8ca48e5",
           redirectUrl: "spotify-ios-quick-start://spotify-login-callback");
       
-      result ? logger.d("Connection to Spotify Successfull") : logger.d("Connecting to Spotify Unsuccessful");
+      if (result) {
+        logger.d("Connection to Spotify Successfull");
+        widget.onConnect?.call();
+      } else {
+        logger.d("Connecting to Spotify Unsuccessful");
+      }
       
       setState(() {_loading = false; });
 
     } on PlatformException catch (e) {
       setState(() { _loading = false; });
-      logger.d("Error Code: $e: ${e.message}");
+      logger.d("Error Code: ${e.code}: ${e.message}");
 
     } on MissingPluginException {
       setState(() { _loading = false; });

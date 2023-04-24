@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:visualfy/widgets/spotifyPlayer.dart';
 import 'widgets/spotifyAuth.dart';
 
 void main() {
@@ -57,6 +58,7 @@ class Album {
 class _MyHomePageState extends State<MyHomePage> {
   String message = "";
   String apiToken = "";
+  bool _connected = false;
 
   // Send a POST request to Spotify API to get the access token for future request
   fetchToken () async {
@@ -106,8 +108,17 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            SpotifyAuth(),
+          children: <Widget>[
+            SpotifyAuth(onConnect: (){
+              setState(() {
+                _connected = true;
+              });
+              print(_connected);
+            }),
+            _connected ?
+              const SpotifyPlayer()
+              :
+              Row(),
           ],
         ),
       ),
