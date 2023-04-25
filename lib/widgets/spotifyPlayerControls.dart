@@ -1,31 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
-import 'package:spotify_sdk/models/player_context.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
-import 'package:visualfy/widgets/spotifyImage.dart';
 
-import 'spotifyPlayerControls.dart';
+class SpotifyPlayerControls extends StatefulWidget {  
+  const SpotifyPlayerControls({super.key, required this.playerState});
 
-class SpotifyPlayer extends StatefulWidget {
-  const SpotifyPlayer({super.key});
-  
+  final PlayerState playerState;
+
   @override
-  State<SpotifyPlayer> createState() => _SpotifyPlayerState();
+  State<StatefulWidget> createState() => _SpotifyPlayerControlState();
 }
 
-class _SpotifyPlayerState extends State<SpotifyPlayer> {
+class _SpotifyPlayerControlState extends State<SpotifyPlayerControls> {
   var logger = Logger();
-
-  bool _isPaused = false;
 
   Future<void> play() async {
     try {
       await SpotifySdk.play(spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
-      setState(() {
-        _isPaused = false;
-      });
     } on PlatformException catch (e) {
       logger.d("Error Code: ${e.code}: ${e.message}");
     } on MissingPluginException {
@@ -73,9 +66,11 @@ class _SpotifyPlayerState extends State<SpotifyPlayer> {
     }
   }
 
-  Future<void> toggleRepeat() async {
+  Future<void> shuffle(bool shuffle) async {
     try {
-      await SpotifySdk.toggleRepeat();
+      await SpotifySdk.setShuffle(
+        shuffle: shuffle,
+      );
     } on PlatformException catch (e) {
       logger.d("${e.code}: ${e.message}");
     } on MissingPluginException {
@@ -83,44 +78,52 @@ class _SpotifyPlayerState extends State<SpotifyPlayer> {
     }
   }
 
-  Future<void> toggleShuffle() async {
+  Future<void> repeat(bool repeatSwitch) async {
     try {
-      await SpotifySdk.toggleShuffle();
+      await SpotifySdk.setRepeatMode(
+        repeatMode: repeatSwitch ? RepeatMode.track : RepeatMode.off,
+      );
     } on PlatformException catch (e) {
       logger.d("${e.code}: ${e.message}");
     } on MissingPluginException {
       logger.d('not implemented');
     }
-  }
-
-  Widget _buildPlayerStateWidget() {
-    return StreamBuilder<PlayerState>(
-      stream: SpotifySdk.subscribePlayerState(),
-      builder: (BuildContext context, AsyncSnapshot<PlayerState> snapshot) {
-        var track = snapshot.data?.track;
-        var currentTrackImageUri = track?.imageUri;
-        var playerState = snapshot.data;
-
-        if (playerState == null || track == null) {
-          return Center(
-            child: Container(),
-          );
-        }
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SpotifyImage(uri: track.imageUri),
-            Text(track.name),
-            SpotifyPlayerControls(playerState: playerState)
-          ],
-        );
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return _buildPlayerStateWidget();
-  }
+    return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Switch.adaptive(
+                  value: widget.playerState.playbackOptions.repeatMode.index == 0 ? false : true, 
+                  onChanged: (bool repeatSwitch) => repeat(repeatSwitch)
+                ),
+                TextButton(
+                  onPressed: skipPrevious, 
+                  child: const Icon(Icons.skip_previous)
+                ),
+                widget.playerState.isPaused 
+                  ?
+                    TextButton(
+                      onPressed: resume, 
+                      child: const Icon(Icons.play_arrow)
+                    )
+                  :
+                    TextButton(
+                      onPressed: pause, 
+                      child: const Icon(Icons.pause)
+                    ),
+                TextButton(
+                  onPressed: skipNext, 
+                  child: const Icon(Icons.skip_next)
+                ),
+                Switch.adaptive(
+                  value: widget.playerState.playbackOptions.isShuffling, 
+                  onChanged: (bool shuffleSwitch) => shuffle(shuffleSwitch)
+                )
+              ],
+            );
+    }
 
 }
