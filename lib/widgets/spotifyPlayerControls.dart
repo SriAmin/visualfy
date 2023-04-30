@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
@@ -69,8 +71,8 @@ class _SpotifyPlayerControlState extends State<SpotifyPlayerControls> {
   Future<void> shuffle(bool shuffle) async {
     try {
       await SpotifySdk.setShuffle(
-        shuffle: shuffle,
-      );
+          shuffle: shuffle,
+        );
     } on PlatformException catch (e) {
       logger.d("${e.code}: ${e.message}");
     } on MissingPluginException {
@@ -92,6 +94,8 @@ class _SpotifyPlayerControlState extends State<SpotifyPlayerControls> {
 
   @override
   Widget build(BuildContext context) {
+    var isShuffling = widget.playerState.playbackOptions.isShuffling;
+
     return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -118,10 +122,11 @@ class _SpotifyPlayerControlState extends State<SpotifyPlayerControls> {
                   onPressed: skipNext, 
                   child: const Icon(Icons.skip_next)
                 ),
-                Switch.adaptive(
-                  value: widget.playerState.playbackOptions.isShuffling, 
-                  onChanged: (bool shuffleSwitch) => shuffle(shuffleSwitch)
-                )
+                isShuffling
+                ?
+                TextButton(onPressed: () => shuffle(false), child: const Icon(Icons.shuffle, color: Colors.green))
+                :
+                TextButton(onPressed: () => shuffle(true), child: const Icon(Icons.shuffle, color: Colors.grey))
               ],
             );
     }
