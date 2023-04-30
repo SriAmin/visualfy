@@ -37,9 +37,25 @@ class _SpotifyAuthState extends State<SpotifyAuth>{
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
+    return ElevatedButton(
       onPressed: connectToSpotifyRemote, 
-      child: const Icon(Icons.settings_remote)
+      style: ElevatedButton.styleFrom(
+        elevation: 5
+      ),
+      child: Container (
+        width: MediaQuery.of(context).size.width - 100,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text("Connect to Spotify"),
+            const Padding(padding: EdgeInsets.all(5.0)),
+            Image.network(
+              "https://www.citypng.com/public/uploads/small/11661570403whwxybsmx9s49gydvycyvydsof4sqok0xk0cisomyqi9tvzojomgsfwp1ffra1pqt5ndii64wnwpzmkqsvjr7wkuh3fpukvy2eki.png",
+              width: 30,  
+            )
+          ],
+        ),
+      )
     );
   }
 }
