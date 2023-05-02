@@ -1,3 +1,7 @@
+// main.dart
+// Purpose of this application is to intiate the application and be the home for all elements related to the application,
+// This file is ran first upon the application startup
+
 import 'package:flutter/material.dart';
 import 'package:visualfy/widgets/spotifyPlayer.dart';
 import 'widgets/spotifyAuth.dart';
@@ -35,22 +39,27 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //Set the App Bar to show the App Title
       appBar: AppBar(
         title: const Text("Visualfy"),
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          //If Connected, align the elements to the end if connected, otherwise center it
+          mainAxisAlignment: _connected ? MainAxisAlignment.end : MainAxisAlignment.center,
           children: <Widget>[
-            SpotifyAuth(onConnect: (){
-              setState(() {
-                _connected = true;
-              });
-            }),
+            //If Connected, show the Spotify Media Player, otherwise show the Spotify Auth Button
             _connected ?
-              const SpotifyPlayer()
+              Column(children: const <Widget>[
+                SpotifyPlayer(),
+                Padding(padding: EdgeInsets.all(15)),
+              ],)
               :
-              Row(),
+              SpotifyAuth(onConnect: (){
+                setState(() {
+                  _connected = true;
+                });
+              }),
           ],
         ),
       ),

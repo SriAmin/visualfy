@@ -1,4 +1,7 @@
-import 'dart:math';
+// spotifyPlayerControls.dart
+// This file handles all media controls of the spotify player, you'd be able to pause, resume
+// skip next, skip previous, shuffle and repeat. This will also request the player state from it's
+// parent Widget to alter the UI based on its values
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +12,7 @@ import 'package:spotify_sdk/spotify_sdk.dart';
 class SpotifyPlayerControls extends StatefulWidget {  
   const SpotifyPlayerControls({super.key, required this.playerState});
 
+  //Required parameter of the player state of the connected Spotify Player
   final PlayerState playerState;
 
   @override
@@ -18,16 +22,7 @@ class SpotifyPlayerControls extends StatefulWidget {
 class _SpotifyPlayerControlState extends State<SpotifyPlayerControls> {
   var logger = Logger();
 
-  Future<void> play() async {
-    try {
-      await SpotifySdk.play(spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
-    } on PlatformException catch (e) {
-      logger.d("Error Code: ${e.code}: ${e.message}");
-    } on MissingPluginException {
-      logger.d("Not Implemented");
-    }
-  }
-
+  // Function will call on the Spotify SDK to pause the currently playing track
   Future<void> pause() async {
     try {
       await SpotifySdk.pause();
@@ -38,6 +33,7 @@ class _SpotifyPlayerControlState extends State<SpotifyPlayerControls> {
     }
   }
 
+  // Function will call on the Spotify SDK to resume the currently playing track
   Future<void> resume() async {
     try {
       await SpotifySdk.resume();
@@ -48,6 +44,7 @@ class _SpotifyPlayerControlState extends State<SpotifyPlayerControls> {
     }
   }
 
+  // Function will call on the Spotify SDK to skip to the next song in the queue
   Future<void> skipNext() async {
     try {
       await SpotifySdk.skipNext();
@@ -58,6 +55,7 @@ class _SpotifyPlayerControlState extends State<SpotifyPlayerControls> {
     }
   }
 
+  // Function will call on the Spotify SDK to skip to the previous song, or restart it based on songs position
   Future<void> skipPrevious() async {
     try {
       await SpotifySdk.skipPrevious();
@@ -68,6 +66,7 @@ class _SpotifyPlayerControlState extends State<SpotifyPlayerControls> {
     }
   }
 
+  // Function will call on the Spotify SDK to set the shuffle mode of the player, true will shuffle, false will turn it off
   Future<void> shuffle(bool shuffle) async {
     try {
       await SpotifySdk.setShuffle(
@@ -80,6 +79,7 @@ class _SpotifyPlayerControlState extends State<SpotifyPlayerControls> {
     }
   }
 
+  // Function will call on the Spotify SDK to set the repeat mode of the player, true will repeat the track, false will turn it off
   Future<void> repeat(bool repeatSwitch) async {
     try {
       await SpotifySdk.setRepeatMode(
@@ -94,19 +94,17 @@ class _SpotifyPlayerControlState extends State<SpotifyPlayerControls> {
 
   @override
   Widget build(BuildContext context) {
+    //Determines the shuffle mode of the track to alter the UI of the media player
     var isShuffling = widget.playerState.playbackOptions.isShuffling;
 
     return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Switch.adaptive(
-                  value: widget.playerState.playbackOptions.repeatMode.index == 0 ? false : true, 
-                  onChanged: (bool repeatSwitch) => repeat(repeatSwitch)
-                ),
                 TextButton(
                   onPressed: skipPrevious, 
                   child: const Icon(Icons.skip_previous)
                 ),
+                // If the track is currently paused, show the resume button, and vice versa
                 widget.playerState.isPaused 
                   ?
                     TextButton(
@@ -122,6 +120,7 @@ class _SpotifyPlayerControlState extends State<SpotifyPlayerControls> {
                   onPressed: skipNext, 
                   child: const Icon(Icons.skip_next)
                 ),
+                //If the shuffle mode is off, make the button grey, if its on, show the button as green and active
                 isShuffling
                 ?
                 TextButton(onPressed: () => shuffle(false), child: const Icon(Icons.shuffle, color: Colors.green))
