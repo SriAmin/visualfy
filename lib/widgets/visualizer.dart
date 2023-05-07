@@ -60,16 +60,19 @@ class _VisualizerState extends State<Visualizer> {
     super.initState();
     _frequencyData = List.filled(100, 0.0);
     _samplingRate = 44100;
-    _getTrackData(widget.trackId).then((trackData) {
+    _getTrackData(widget.trackId).then((trackData) async {
       final previewUrl = trackData['preview_url'];
-      logger.d(trackData);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Column(
+      children: <Widget>[
+        Padding(padding: EdgeInsets.only(top: MediaQuery.of(context).size.height) / 3),
+        const Text("Hello"),
+        Padding(padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height) / 2.5),
+      ]
+    );
   }
-
-
 }

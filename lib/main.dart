@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           //If Connected, align the elements to the end if connected, otherwise center it
-          mainAxisAlignment: _connected ? MainAxisAlignment.end : MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             //If Connected, show the Spotify Media Player, otherwise show the Spotify Auth Button
             _connected ?

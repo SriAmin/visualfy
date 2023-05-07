@@ -14,7 +14,7 @@ import 'spotifyPlayerControls.dart';
 
 class SpotifyPlayer extends StatefulWidget {
   const SpotifyPlayer({super.key});
-  
+
   @override
   State<SpotifyPlayer> createState() => _SpotifyPlayerState();
 }
@@ -24,44 +24,47 @@ class _SpotifyPlayerState extends State<SpotifyPlayer> {
   //Sets up a Stream to the Spotify Player, this will listen to changes to the users spotfiy account to translate them here
   Widget _buildPlayerStateWidget() {
     return StreamBuilder<PlayerState>(
-      stream: SpotifySdk.subscribePlayerState(),
-      builder: (BuildContext context, AsyncSnapshot<PlayerState> snapshot) {
-        //Grab the currently playing track's data along with the current state of the media player
-        var track = snapshot.data?.track;
-        var currentTrackImageUri = track!.imageUri;
-        var playerState = snapshot.data;
-                
-        if (playerState == null || track == null) {
-          return Center(
-            child: Container(),
-          );
-        }
+        stream: SpotifySdk.subscribePlayerState(),
+        builder: (BuildContext context, AsyncSnapshot<PlayerState> snapshot) {
+          //Grab the currently playing track's data along with the current state of the media player
+          var track = snapshot.data?.track;
+          var currentTrackImageUri = track?.imageUri;
+          var playerState = snapshot.data;
 
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Visualizer(trackId: track.uri.substring(14)),
-            SpotifyImage(uri: currentTrackImageUri),
-            Column(
-              children: <Widget>[
-                //This will shortern the string of the title if its too long
-                Text(
-                  track.name.substring(0, min(track.name.length, 48)),
-                  style: const TextStyle(
-                    fontSize: 12,
+          if (playerState == null || track == null) {
+            return Center(
+              child: Container(),
+            );
+          }
+
+          return Column(
+            children: <Widget>[
+              Visualizer(trackId: track.uri.substring(14)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  SpotifyImage(uri: currentTrackImageUri!),
+                  Column(
+                    children: <Widget>[
+                      //This will shortern the string of the title if its too long
+                      Text(
+                        track.name.substring(0, min(track.name.length, 48)),
+                        style: const TextStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                      SpotifyPlayerControls(playerState: playerState)
+                    ],
                   ),
-                ),
-                SpotifyPlayerControls(playerState: playerState)
-              ],
-            ),
-          ],
-        );
-    });
+                ],
+              )
+            ],
+          );
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     return _buildPlayerStateWidget();
   }
-
 }
